@@ -1,0 +1,44 @@
+{
+  "name": "fastify-type-orm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc -w -p tsconfig.json",
+    "start": "fastify start dist/plugin.js -l info -P -o",
+    "build-webpack": "webpack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/static": "^8.2.0",
+    "@fastify/view": "^11.1.0",
+    "@types/pug": "^2.0.10",
+    "bootstrap": "^5.3.6",
+    "class-validator": "^0.14.2",
+    "fastify": "^5.4.0",
+    "fastify-cli": "^7.4.0",
+    "fastify-reverse-routes": "^3.0.0",
+    "i18next": "^25.2.1",
+    "pg": "^8.16.0",
+    "pug": "^3.0.3",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.24",
+    "typeorm-fastify-plugin": "^3.0.0",
+    "typeorm-naming-strategies": "^4.1.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.2",
+    "@types/node": "^24.0.1",
+    "css-loader": "^7.1.2",
+    "mini-css-extract-plugin": "^2.9.2",
+    "pino-pretty": "^13.0.0",
+    "style-loader": "^4.0.0",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
+  }
+}

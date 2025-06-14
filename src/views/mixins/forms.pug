@@ -1,0 +1,115 @@
+- const getInputName = (property) => `data[${property}]`
+- const getInputId = (property) => `data_${property}`
+
+mixin formFor(entity = null)
+  form&attributes(attributes)
+    block
+
+mixin input(entity, propertyName, errors = {})
+  - propertyErrors = _.get(errors, propertyName)
+  - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
+  - inputId = getInputId(propertyName)
+  .mb-3(class=(errors[propertyName] && 'has-danger'))
+    label(
+      for= inputId
+    )= t(`form.${propertyName}`)
+    input(
+      id= inputId
+      name=getInputName(propertyName)
+      class=classLine
+      value=_.get(entity, propertyName, '')
+    )&attributes(attributes)
+    if !_.isEmpty(propertyErrors)
+      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+
+mixin textarea(entity, propertyName, errors = {})
+  - propertyErrors = _.get(errors, propertyName)
+  - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
+  - inputId = getInputId(propertyName)
+  - value=_.get(entity, propertyName, '')
+  .mb-3(class=(errors[propertyName] && 'has-danger'))
+    label(
+      for= inputId
+    )= t(`form.${propertyName}`)
+    textarea(
+      id= inputId
+      name=getInputName(propertyName)
+      class=classLine
+    )&attributes(attributes) #{value}
+    if !_.isEmpty(propertyErrors)
+      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+
+mixin submit(form = null)
+  .form-group
+    input(class='btn btn-primary' type='submit')&attributes(attributes)
+
+mixin buttonTo(action, method)
+  form(action=action, method="post")
+    input(name="_method" type="hidden" value=method)
+    input(type='submit')&attributes(attributes)
+
+mixin select(entity, propertyName, errors = {}, items, multiple = false)
+  - propertyErrors = _.get(errors, propertyName)
+  - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
+  - inputId = getInputId(propertyName)
+  - name = getInputName(propertyName)
+  - selectedOptions = entity[propertyName] ? [entity[propertyName]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
+  .mb-3(class=(errors[propertyName] && 'has-danger'))
+    label(
+      for= inputId
+    )= t(`form.${propertyName}`)
+    select(
+      id= inputId
+      name=getInputName(propertyName)
+      class=classLine
+    )
+      option
+      each option in items
+        - isSelect = _.includes(selectedOptions, option.id)
+        option(value=option.id selected= isSelect) #{option.name}
+    if !_.isEmpty(propertyErrors)
+      .invalid-feedback= propertyErrors.map(({ message }) => message === 'must be integer'? 'must be specified' : message).join('. ')
+
+mixin selectMultiple(entity, propertyName, errors = {}, items)
+  - propertyErrors = _.get(errors, propertyName)
+  - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
+  - inputId = getInputId(propertyName)
+  - name = getInputName(propertyName)
+  - selectedOptions = entity[propertyName] ? [entity[propertyName]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
+  .mb-3(class=(errors[propertyName] && 'has-danger'))
+    label(
+      for= inputId
+    )= t(`form.${propertyName}`)
+    select(
+      id= inputId
+      name=getInputName(propertyName)
+      class=classLine
+      multiple
+    )
+      each option in items
+        - isSelect = _.includes(selectedOptions, option.id)
+        option(value=option.id selected= isSelect) #{option.name}
+    if !_.isEmpty(propertyErrors)
+      .invalid-feedback= propertyErrors.map(({ message }) => message === 'must be integer'? 'must be specified' : message).join('. ')
+
+mixin filterSelect(entity, propertyName, items)
+  - inputId = getInputId(propertyName)
+    .col-12.col-md
+      .input-group.mb-3
+        label.input-group-text(for= inputId)= t(`views.${entity}.filter.${propertyName}`)
+        select.form-select(id= inputId, name=propertyName)
+          option
+          each option in items
+            option(value=option.id, selected= option.id == query[propertyName]) #{option.name}
+
+mixin checkbox(entity, propertyName)
+  - inputId = 'isCreatorUser'
+  .mb-3.form-check
+    label.form-check-label(
+      for= inputId
+    )= t(`views.tasks.filter.own`)
+    input.form-check-input(
+      type= 'checkbox'
+      id= inputId
+      name=propertyName
+    )
