@@ -5,6 +5,26 @@ mixin formFor(entity = null)
   form&attributes(attributes)
     block
 
+mixin scriptForFetch(formId, domain, id)
+  script.
+    const submitForm = document.getElementById('#{formId}')
+    submitForm.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const prePayload = new FormData(submitForm)
+      const payload = new URLSearchParams(prePayload);
+
+      fetch('#{domain}/#{id}', {
+        method: 'PATCH',
+        body: payload,
+      })
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '#{domain}'
+          }
+        })
+    })
+
 mixin input(entity, propertyName, errors = {})
   - propertyErrors = _.get(errors, propertyName)
   - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')

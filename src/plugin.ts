@@ -1,9 +1,11 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 import fastifyView from "@fastify/view";
 import fastifyStatic from "@fastify/static";
-// import fastifyReverseRoutes from 'fastify-reverse-routes';
 import dbConn from 'typeorm-fastify-plugin';
+// import fastifyMiddie from "@fastify/middie";
+import fastifyFormbody from "@fastify/formbody";
 import Pug from 'pug';
+import qs from 'qs';
 import i18next from "i18next";
 import path from "node:path";
 
@@ -51,6 +53,7 @@ const setUpStaticAssets = (app: FastifyInstance) => {
 
 const registerPlugins = async (app: FastifyInstance) => {
   app.register(dbConn, { connection: dev });
+  await app.register(fastifyFormbody, { parser: qs.parse });
 }
 
 export default async (app: FastifyInstance, _options: unknown) => {

@@ -27,4 +27,8 @@ export class Users extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  public get name() : string {
+    return `${this.firstName} ${this.lastName}`;
+  }
 }
