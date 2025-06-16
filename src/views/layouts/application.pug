@@ -8,13 +8,13 @@ html(lang="ru" data-bs-theme="dark")
     link(href=assetPath('main.css') rel="stylesheet")
     meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
   body.d-flex.flex-column.min-vh-100
-    nav.navbar.navbar-expand-lg.mb-3
+    nav.navbar.navbar-expand-lg.border-bottom
       .container-fluid
-        a.navbar-brand.pb-4(href='/')= t('appName')
+        a.navbar-brand.mb-1(href='/')= t('appName')
         button.navbar-toggler(data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent")
           span.navbar-toggler-icon
         .collapse.navbar-collapse(id="navbarToggleExternalContent")
-          ul.navbar-nav.justify-content-end.w-100
+          ul.navbar-nav.justify-content-end.w-100.align-items-center
             li.nav-item.me-auto
               a.nav-link(href='/users')= t('layouts.application.users')
             if isAuthenticated()
@@ -35,7 +35,7 @@ html(lang="ru" data-bs-theme="dark")
 
       each messages, type in reply.flash() || []
         each message in messages
-          div.alert(class=`alert-${getAlertClass(type)}`)= message
+          div.alert.mt-3(class=`alert-${getAlertClass(type)}`)= message
 
       h1.my-4
         block header

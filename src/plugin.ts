@@ -90,14 +90,6 @@ const registerPlugins = async (app: FastifyInstance) => {
   fastifyPassport.registerUserDeserializer(userDeserializer)
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
 
-  app.decorate(
-    'authenticate',
-    async (req: FastifyRequest) => (
-      await fastifyPassport.authenticate('auth', {
-        failureRedirect: '/',
-        failureFlash: i18next.t('flash.authError'),
-      })
-    ))
 }
 
 export default async (app: FastifyInstance, _options: unknown) => {
