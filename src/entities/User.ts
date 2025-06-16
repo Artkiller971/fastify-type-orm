@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity } from "typeorm";
-import { Length, IsEmail } from "class-validator";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, BeforeInsert} from "typeorm";
+import { MinLength, IsEmail } from "class-validator";
+import encrypt from '../helpers/hash';
 
 @Entity()
 export class Users extends BaseEntity {
@@ -7,11 +8,13 @@ export class Users extends BaseEntity {
   id: number;
 
   @Column()
-  @Length(1)
+  @MinLength(1,{ 
+    message: 'Minimal length is $constraint1'})
   firstName: string;
 
   @Column()
-  @Length(1)
+  @MinLength(1, { 
+    message: 'Minimal length is $constraint1'})
   lastName: string;
 
   @Column({ unique: true })
@@ -19,7 +22,8 @@ export class Users extends BaseEntity {
   email: string;
 
   @Column()
-  @Length(3)
+  @MinLength(3, { 
+    message: 'Minimal length is $constraint1'})
   password: string;
 
   @CreateDateColumn()
@@ -28,7 +32,16 @@ export class Users extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @BeforeInsert()
+  hashPassword() {
+    this.password = encrypt(this.password);
+  }
+
   public get name() : string {
     return `${this.firstName} ${this.lastName}`;
+  }
+
+  verifyPassword(value: string): boolean {
+    return encrypt(value) === this.password;
   }
 }

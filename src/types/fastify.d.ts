@@ -3,7 +3,12 @@ import fastify from 'fastify';
 declare module 'fastify' {
   interface FastifyReply {
     render(path: string, locals?: object): void;
-  };
+    locals: object,
+  }
+
+  interface FastifyInstance {
+    authenticate: (req: FastifyRequest) => void
+  }
   
   interface IParams {
     [key: string]: string;
@@ -16,7 +21,8 @@ declare module 'fastify' {
   interface IBody {
     [key: string]: string | object;
     data: {
-      [key: string]: string | object[];
+      [key: string]: string,
+      labels: object[];
     }
   }
 }

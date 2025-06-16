@@ -5,29 +5,9 @@ mixin formFor(entity = null)
   form&attributes(attributes)
     block
 
-mixin scriptForFetch(formId, domain, id)
-  script.
-    const submitForm = document.getElementById('#{formId}')
-    submitForm.addEventListener('submit', function(e){
-      e.preventDefault();
-
-      const prePayload = new FormData(submitForm)
-      const payload = new URLSearchParams(prePayload);
-
-      fetch('#{domain}/#{id}', {
-        method: 'PATCH',
-        body: payload,
-      })
-        .then(response => {
-          if (response.ok) {
-            window.location.href = '#{domain}'
-          }
-        })
-    })
-
-mixin input(entity, propertyName, errors = {})
-  - propertyErrors = _.get(errors, propertyName)
-  - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
+mixin input(entity, propertyName, errors = [])
+  - propertyError = errors.find((item) => item.property === propertyName)
+  - classLine = 'form-control' + (!propertyError ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   .mb-3(class=(errors[propertyName] && 'has-danger'))
     label(
@@ -39,12 +19,12 @@ mixin input(entity, propertyName, errors = {})
       class=classLine
       value=_.get(entity, propertyName, '')
     )&attributes(attributes)
-    if !_.isEmpty(propertyErrors)
-      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+    if propertyError
+      .invalid-feedback= propertyError.constraints.join(' ')
 
-mixin textarea(entity, propertyName, errors = {})
-  - propertyErrors = _.get(errors, propertyName)
-  - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
+mixin textarea(entity, propertyName, errors = [])
+  - propertyError = errors.find((item) => item.property === propertyName)
+  - classLine = 'form-control' + (!propertyError ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   - value=_.get(entity, propertyName, '')
   .mb-3(class=(errors[propertyName] && 'has-danger'))
@@ -56,8 +36,8 @@ mixin textarea(entity, propertyName, errors = {})
       name=getInputName(propertyName)
       class=classLine
     )&attributes(attributes) #{value}
-    if !_.isEmpty(propertyErrors)
-      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')
+    if propertyError
+      .invalid-feedback= propertyError.constraints.join(' ')
 
 mixin submit(form = null)
   .form-group
@@ -65,7 +45,6 @@ mixin submit(form = null)
 
 mixin buttonTo(action, method)
   form(action=action, method="post")
-    input(name="_method" type="hidden" value=method)
     input(type='submit')&attributes(attributes)
 
 mixin select(entity, propertyName, errors = {}, items, multiple = false)
