@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
+import { FastifyInstance } from "fastify"
 import fastifyView from "@fastify/view";
 import fastifyStatic from "@fastify/static";
 import dbConn from 'typeorm-fastify-plugin';
@@ -7,8 +7,6 @@ import 'reflect-metadata';
 import fastifyFormbody from "@fastify/formbody";
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyPassport from '@fastify/passport';
-import { preValidationHookHandler } from "fastify";
-import { SessionStrategy } from "@fastify/passport/dist/strategies";
 import Pug from 'pug';
 import qs from 'qs';
 import i18next from "i18next";
@@ -21,8 +19,6 @@ import getHelpers from "./helpers/helpers";
 import addRoutes from './routes/index';
 import ru from './locales/ru.js';
 import { Users } from "./entities/User";
-import fs from 'node:fs';
-import { randomBytes } from 'crypto';
 
 dotenv.config({ path: path.resolve('./.env')});
 

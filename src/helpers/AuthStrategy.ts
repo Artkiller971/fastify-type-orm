@@ -8,7 +8,7 @@ export default class AuthStrategy extends Strategy {
     this.app = app;
   }
 
-  async authenticate (req: FastifyRequest, options?: object) {
+  async authenticate (req: FastifyRequest) {
     if (req.isAuthenticated()) {
       return this.pass();
     }

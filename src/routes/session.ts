@@ -1,13 +1,10 @@
 import { FastifyInstance, IParams, IBody } from "fastify";
-import { validateOrReject, ValidationError} from "class-validator";
-import { Users } from "../entities/User";
-import { plainToInstance } from "class-transformer";
 import  fastifyPassport  from "@fastify/passport"
 import i18next from "i18next";
 
 export default async (app: FastifyInstance) => {
   app
-    .get('/session/new', async (req, reply) => {
+    .get('/session/new', async (_req, reply) => {
       const signInForm = {}
       reply.render('session/new', { signInForm });
       return reply;

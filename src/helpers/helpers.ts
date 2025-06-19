@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import { FastifyInstance } from 'fastify';
 import _ from 'lodash';
 
-export default (app: FastifyInstance) => ({
+export default (_app: FastifyInstance) => ({
   // route(name: string, params = {}) {
   //   return app.reverse(name, params);
   // },

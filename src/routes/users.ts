@@ -18,7 +18,7 @@ export default async (app: FastifyInstance) => {
 
       return reply;
     })
-    .get('/users/new', async (req, reply) => {
+    .get('/users/new', async (_req, reply) => {
       const user = app.orm.getRepository(Users).create();
       reply.render('users/new', { user });
       return reply;
