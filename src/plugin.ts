@@ -7,6 +7,7 @@ import 'reflect-metadata';
 import fastifyFormbody from "@fastify/formbody";
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyPassport from '@fastify/passport';
+import { preValidationHookHandler } from "fastify";
 import { SessionStrategy } from "@fastify/passport/dist/strategies";
 import Pug from 'pug';
 import qs from 'qs';
@@ -89,6 +90,15 @@ const registerPlugins = async (app: FastifyInstance) => {
   }
   fastifyPassport.registerUserDeserializer(userDeserializer)
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
+
+  await app.decorate('authenticate', (...args) => {
+    return (fastifyPassport.authenticate(
+    'auth',
+    {
+      failureRedirect: '/',
+      failureFlash: i18next.t('flash.authError'),
+    }
+  ).call(app, ...args))});
 
 }
 

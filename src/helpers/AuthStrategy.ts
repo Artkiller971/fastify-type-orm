@@ -8,18 +8,20 @@ export default class AuthStrategy extends Strategy {
     this.app = app;
   }
 
-  async authenticate (req: FastifyRequest, options?: any): Promise<void> {
+  async authenticate (req: FastifyRequest, options?: object) {
     if (req.isAuthenticated()) {
       return this.pass();
     }
 
     const body = req.body as IBody;
-    const email = body.data.email;
-    const password = body.data.password
+    if (body) {
+      const email = body.data.email
+      const password = body.data.password
 
-    const user = await this.app.orm.getRepository(Users).findOneBy({ email })
-    if (user && user.verifyPassword(password)) {
-      return this.success(user);
+      const user = await this.app.orm.getRepository(Users).findOneBy({ email })
+      if (user && user.verifyPassword(password)) {
+        return this.success(user);
+      }
     }
 
     return this.fail();

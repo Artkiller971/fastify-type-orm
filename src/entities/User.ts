@@ -8,22 +8,19 @@ export class Users extends BaseEntity {
   id: number;
 
   @Column()
-  @MinLength(1,{ 
-    message: 'Minimal length is $constraint1'})
+  @MinLength(1,{ message: 'Minimal length is $constraint1'})
   firstName: string;
 
   @Column()
-  @MinLength(1, { 
-    message: 'Minimal length is $constraint1'})
+  @MinLength(1, { message: 'Minimal length is $constraint1'})
   lastName: string;
 
   @Column({ unique: true })
-  @IsEmail()
+  @IsEmail({}, { message: 'Must be a valid email' })
   email: string;
 
   @Column()
-  @MinLength(3, { 
-    message: 'Minimal length is $constraint1'})
+  @MinLength(3, { message: 'Minimal length is $constraint1'})
   password: string;
 
   @CreateDateColumn()

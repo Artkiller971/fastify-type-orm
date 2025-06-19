@@ -3,6 +3,7 @@ import { validateOrReject, ValidationError} from "class-validator";
 import { Users } from "../entities/User";
 import { plainToInstance } from "class-transformer";
 import i18next from "i18next";
+import { QueryFailedError } from "typeorm";
 
 export default async (app: FastifyInstance) => {
   app
@@ -11,7 +12,7 @@ export default async (app: FastifyInstance) => {
       try {
         reply.render('users/index', { users });
       } catch (e) {
-          reply.send('Proebali pohody');
+          reply.send('error');
           req.log.error(e);
         }
 
@@ -39,20 +40,26 @@ export default async (app: FastifyInstance) => {
       try {
         await validateOrReject(user, { validationError: { target: false }});
         await app.orm.getRepository(Users).insert(user);
+        req.flash('info', i18next.t('flash.users.create.success'));
         reply.redirect('/users');
         return reply;
       } catch (e) {
-        console.error(e);
-        const validationErrors = e as ValidationError[];
-        const errors = validationErrors.map((error) => {
+        let errors;
+        if (e instanceof QueryFailedError) {
+          errors = [{ property: 'email', constraints: ['This email is already in use!']}]
+        } else {
+          const validationErrors = e as ValidationError[];
+          errors = validationErrors.map((error) => {
           const constraints = Object.values(error.constraints as object)
           return {
             property: error.property,
             constraints,
-          }
-        })
-
-        reply.render('users/new', { user, errors });
+            }
+          })
+        }
+        
+        req.flash('error', i18next.t('flash.users.create.error'));
+        reply.render('users/new', { user: req.body.data , errors });
         return reply;
       }
     })

@@ -7,7 +7,7 @@ declare module 'fastify' {
   }
 
   interface FastifyInstance {
-    authenticate: (req: FastifyRequest) => void
+    authenticate: (req: FastifyRequest, reply: FastifyReply) => unknown
   }
   
   interface IParams {
