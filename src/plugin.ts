@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify"
+import { FastifyInstance, FastifyReply, FastifyRequest, IParams } from "fastify"
 import fastifyView from "@fastify/view";
 import fastifyStatic from "@fastify/static";
 import dbConn from 'typeorm-fastify-plugin';
@@ -19,6 +19,7 @@ import getHelpers from "./helpers/helpers";
 import addRoutes from './routes/index';
 import ru from './locales/ru.js';
 import { Users } from "./entities/User";
+import { NextFunction } from "@fastify/middie";
 
 dotenv.config({ path: path.resolve('./.env')});
 
@@ -87,7 +88,7 @@ const registerPlugins = async (app: FastifyInstance) => {
   fastifyPassport.registerUserDeserializer(userDeserializer)
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));
 
-  await app.decorate('authenticate', (...args) => {
+  app.decorate('authenticate', (...args) => {
     return (fastifyPassport.authenticate(
     'auth',
     {
@@ -96,6 +97,17 @@ const registerPlugins = async (app: FastifyInstance) => {
     }
   ).call(app, ...args))});
 
+  app.decorate('userCanEditProfile', (req: FastifyRequest, reply: FastifyReply, next: NextFunction) => {
+    const id = req.user ? req.user.id : null;
+    const params = req.params as IParams;
+    const paramsId = params.id;
+    if (id !== parseInt(paramsId, 10)) {
+      req.flash('error', i18next.t('flash.users.authError'));
+      reply.redirect('/users');
+    }
+
+    next();
+  })
 }
 
 export default async (app: FastifyInstance, _options: unknown) => {

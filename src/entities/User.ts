@@ -1,10 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, BeforeInsert} from "typeorm";
 import { MinLength, IsEmail } from "class-validator";
 import encrypt from '../helpers/hash';
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class Users extends BaseEntity {
   @PrimaryGeneratedColumn()
+  @Exclude()
   id: number;
 
   @Column()

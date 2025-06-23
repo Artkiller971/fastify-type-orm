@@ -1,3 +1,4 @@
+import { NextFunction } from '@fastify/middie';
 import 'fastify';
 
 declare module 'fastify' {
@@ -6,8 +7,13 @@ declare module 'fastify' {
     locals: object,
   }
 
+  interface PassportUser {
+    id: number;
+  }
+
   interface FastifyInstance {
     authenticate: (req: FastifyRequest, reply: FastifyReply) => unknown
+    userCanEditProfile: (req: FastifyRequest, reply: FastifyReply, next: NextFunction) => unknown
   }
   
   interface IParams {
