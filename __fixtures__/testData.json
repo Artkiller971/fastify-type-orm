@@ -1,0 +1,22 @@
+{
+  "users": {
+    "new": {
+      "firstName": "Angelique",
+      "lastName": "Edgars",
+      "email": "malika_hodkiewicz75@live.com",
+      "password": "RLJvaIgPOnX5r03"
+    },
+    "existing": {
+      "firstName": "Leeland",
+      "lastName": "Murrigan",
+      "email": "lawrence.kulas87@outlook.com",
+      "password": "O6AvLIQL1cbzrre"
+    },
+    "existing2": {
+      "firstName": "Glori",
+      "lastName": "Baytrop",
+      "email": "elbert_abshire52@gmail.com",
+      "password": "OB9vLIQD2cbrtre"
+    }
+  }
+}

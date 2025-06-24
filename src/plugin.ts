@@ -14,16 +14,16 @@ import path from "node:path";
 import * as dotenv from 'dotenv';
 import AuthStrategy from "./helpers/AuthStrategy";
 
-import { dev } from './data-source';
+import dbConfigs from './data-source';
 import getHelpers from "./helpers/helpers";
 import addRoutes from './routes/index';
-import ru from './locales/ru.js';
+import ru from './locales/ru';
 import { Users } from "./entities/User";
 import { NextFunction } from "@fastify/middie";
 
 dotenv.config({ path: path.resolve('./.env')});
 
-
+const mode = process.env.NODE_ENV || 'development';
 
 const setUpLocales = async () => {
   await i18next
@@ -71,7 +71,7 @@ const setUpStaticAssets = (app: FastifyInstance) => {
 };
 
 const registerPlugins = async (app: FastifyInstance) => {
-  app.register(dbConn, { connection: dev });
+  app.register(dbConn, { connection: dbConfigs[mode] });
   await app.register(fastifyFormbody, { parser: qs.parse });
   await app.register(fastifySecureSession, {
     key: Buffer.from(process.env.SESSION_KEY),
@@ -110,7 +110,7 @@ const registerPlugins = async (app: FastifyInstance) => {
   })
 }
 
-export default async (app: FastifyInstance, _options: unknown) => {
+export default async (app: FastifyInstance, _options?: unknown) => {
   await registerPlugins(app);
 
   await setUpLocales();

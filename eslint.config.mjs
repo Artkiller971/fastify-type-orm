@@ -6,7 +6,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   tseslint.configs.stylistic,
-  [globalIgnores(["**/dist/"])],
+  [globalIgnores(["**/dist/", "**.js"])],
   {
     rules: {
       "no-unused-vars": "off",
