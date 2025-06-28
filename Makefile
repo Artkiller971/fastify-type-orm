@@ -3,3 +3,6 @@ start:
 
 build-webpack:
 	npm run build-webpack
+
+test:
+	npx jest -i

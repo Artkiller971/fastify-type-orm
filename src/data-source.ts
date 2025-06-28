@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+import entities from "./entities/index";
 
 const development = new DataSource({
     type: "sqlite",
@@ -15,7 +16,7 @@ const test = new DataSource({
     database: ":memory:",
     namingStrategy: new SnakeNamingStrategy(),
     logger: "debug",
-    entities: ["./dist/entities/*{.js,.ts}"],
+    entities: entities,
     migrations: ["./dist/migrations/*{.js,.ts}"],
 });
 
