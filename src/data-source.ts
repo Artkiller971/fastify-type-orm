@@ -16,7 +16,7 @@ const test = new DataSource({
     database: ":memory:",
     namingStrategy: new SnakeNamingStrategy(),
     logger: "debug",
-    entities: entities,
+    entities,
     migrations: ["./dist/migrations/*{.js,.ts}"],
 });
 

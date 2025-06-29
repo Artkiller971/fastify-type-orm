@@ -6,3 +6,6 @@ build-webpack:
 
 test:
 	npx jest -i
+
+migrate-dev:
+	npm run migrate-dev

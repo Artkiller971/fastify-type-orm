@@ -1,5 +1,5 @@
 import {
-  describe, beforeAll, it, expect, beforeEach, afterEach
+  describe, beforeAll, it, expect, beforeEach, afterEach, afterAll
 } from '@jest/globals';
 
 import _ from 'lodash';
@@ -96,8 +96,6 @@ describe('Test users CRUD', () => {
       cookies: cookie,
     });
 
-    console.log(await app.orm.query('SELECT * FROM users;'));
-
     expect(responseEdit.statusCode).toBe(302);
 
     const updatedUser = await app.orm.getRepository(Users).findOneBy({ email: params.email });
@@ -123,8 +121,6 @@ describe('Test users CRUD', () => {
     const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
 
     expect(user).not.toBe(null);
-
-    console.log(await app.orm.query('SELECT * FROM users;'));
 
     const responseDelete = await app.inject({
       method: 'POST',
