@@ -93,7 +93,7 @@ describe('test statuses CRUD', () => {
     const newParams = { name: 'Changed' };
 
     const responseEdit = await app.inject({
-      method: 'PATCH',
+      method: 'POST',
       url: `/statuses/${status.id}/edit`,
       payload: {
         data: newParams,
@@ -114,7 +114,7 @@ describe('test statuses CRUD', () => {
     const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
 
     const responseDelete = await app.inject({
-      method: 'DELETE',
+      method: 'POST',
       url: `/statuses/${status.id}/delete`,
       cookies: cookie,
     });

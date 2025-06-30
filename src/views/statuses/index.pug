@@ -1,0 +1,26 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.statuses.statusesList')
+
+
+block content
+  a.btn.btn-primary.mt-3.mb-3(href='/statuses/new')= t('views.statuses.createStatus')
+  .table-responsive
+    table.table.table-borderless.table-striped.mt-5
+      thead
+        tr
+          th= t('views.statuses.id')
+          th= t('views.statuses.name')
+          th= t('views.statuses.createdAt')
+      tbody
+        each status in statuses
+          tr
+            td= status.id
+            td= status.name
+            td= formatDate(status.createdAt)
+            td
+              .d-flex.flex-wrap
+                a.btn.btn-primary.me-3.mb-3(href=`/statuses/${status.id}/edit`)= t('views.statuses.edit.submit')
+                form(action=`/statuses/${status.id}/delete`, method = 'post')
+                  input.btn.btn-danger(type='submit', value=t('views.statuses.delete'))

@@ -18,5 +18,16 @@
       "email": "elbert_abshire52@gmail.com",
       "password": "GloriBaytrop"
     }
+  },
+  "statuses": {
+    "new": {
+      "name": "Done"
+    },
+    "existing": {
+      "name": "Completed"
+    },
+    "existing2": {
+      "name": "no relations"
+    }
   }
 }
