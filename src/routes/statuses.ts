@@ -6,15 +6,9 @@ import i18next from "i18next";
 
 export default async (app: FastifyInstance) => {
   app
-    .get('/statuses', { preValidation: app.authenticate }, async (req, reply) => {
+    .get('/statuses', { preValidation: app.authenticate }, async (_req, reply) => {
       const statuses = await app.orm.getRepository(Statuses).find();
-      try {
-        reply.render('statuses/index', { statuses });
-      } catch (e) {
-          reply.send('error');
-          req.log.error(e);
-        }
-
+      reply.render('statuses/index', { statuses });
       return reply;
     })
     .get('/statuses/new', { preValidation: app.authenticate }, async (_req, reply) => {
@@ -27,15 +21,21 @@ export default async (app: FastifyInstance) => {
       { preValidation: app.authenticate },
       async (req, reply) => {
         const id = parseInt(req.params.id);
-        const status = await app.orm.getRepository(Statuses).findOneBy({ id });
-
-        if (!status) {
-          reply.send('User does not exist');
+        try {
+          const status = await app.orm.getRepository(Statuses).findOneBy({ id });
+          if (!status) {
+          reply.status(404);
+          reply.send('Status does not exist');
           return reply;
         }
-
-        reply.render('statuses/edit', { status });
-        return reply;
+          reply.render('statuses/edit', { status });
+          return reply;
+        } catch {
+          reply.status(404);
+          reply.send('Status does not exist');
+          return reply
+        }
+        
     })
     .post<{Body: IBody, Params: IParams}>('/statuses', async (req, reply) => {
       const status = plainToInstance(Statuses, { ...req.body.data });
@@ -56,6 +56,7 @@ export default async (app: FastifyInstance) => {
         })
         
         req.flash('error', i18next.t('flash.statuses.create.error'));
+        reply.status(400);
         reply.render('statuses/new', { status: req.body.data , errors });
         return reply;
       }
@@ -82,6 +83,7 @@ export default async (app: FastifyInstance) => {
           })
         
         req.flash('error', i18next.t('flash.statuses.update.error'));
+        reply.status(400);
         reply.render('statuses/edit', { status: req.body.data , errors });
         return reply;
       }
@@ -93,6 +95,7 @@ export default async (app: FastifyInstance) => {
           const id = parseInt(req.params.id)
           try {
             await app.orm.getRepository(Statuses).delete(id);
+            req.flash('info', i18next.t('flash.statuses.delete.success'));
             reply.redirect('/statuses');
           } catch (e) {
             req.flash('error', i18next.t('flash.statuses.delete.error'));

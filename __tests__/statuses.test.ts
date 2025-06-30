@@ -2,14 +2,14 @@ import {
   describe, beforeAll, it, expect, beforeEach, afterEach, afterAll
 } from '@jest/globals';
 
-import fastify from 'fastify';
+import fastify, { FastifyInstance} from 'fastify';
 
 import init from '../src/plugin';
 import { getTestData, prepareData } from './helpers/index';
 import { Statuses } from '../src/entities/Status';
 
 describe('test statuses CRUD', () => {
-  let app;
+  let app: FastifyInstance;
   let cookie;
   const testData = getTestData();
 
@@ -57,6 +57,32 @@ describe('test statuses CRUD', () => {
     expect(cookieResponse.statusCode).toBe(200);
   });
 
+  it('edit get', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/statuses/1/edit',
+      cookies: cookie,
+    })
+
+    expect(response.statusCode).toBe(200);
+
+    const errorResponse = await app.inject({
+      method: 'GET',
+      url: '/statuses/nonexistent/edit',
+      cookies: cookie,
+    })
+
+    expect(errorResponse.statusCode).toBe(404);
+
+    const nonexistentResponse = await app.inject({
+      method: 'GET',
+      url: '/statuses/-2/edit',
+      cookies: cookie,
+    })
+
+    expect(nonexistentResponse.statusCode).toBe(404);
+  })
+
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
@@ -86,6 +112,20 @@ describe('test statuses CRUD', () => {
     expect(status).toMatchObject(expected);
   });
 
+  it('create error', async () => {
+    const params = testData.statuses.invalid;
+    const response = await app.inject({
+      method: 'POST',
+      url: '/statuses',
+      payload: {
+        data: params,
+      },
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(400);
+  });
+
   it('edit', async () => {
     const params = testData.statuses.existing;
     const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
@@ -94,7 +134,7 @@ describe('test statuses CRUD', () => {
 
     const responseEdit = await app.inject({
       method: 'POST',
-      url: `/statuses/${status.id}/edit`,
+      url: `/statuses/${status?.id}/edit`,
       payload: {
         data: newParams,
       },
@@ -105,7 +145,25 @@ describe('test statuses CRUD', () => {
 
     const updatedStatus = await app.orm.getRepository(Statuses).findOneBy({ name: newParams.name });
 
-    expect(updatedStatus.name).toBe('Changed');
+    expect(updatedStatus?.name).toBe('Changed');
+  });
+
+  it('edit error', async () => {
+    const params = testData.statuses.existing;
+    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+
+    const newParams = { name: '' };
+
+    const responseEdit = await app.inject({
+      method: 'POST',
+      url: `/statuses/${status?.id}/edit`,
+      payload: {
+        data: newParams,
+      },
+      cookies: cookie,
+    });
+
+    expect(responseEdit.statusCode).toBe(400);
   });
 
   it('delete no relations', async () => {
@@ -115,7 +173,7 @@ describe('test statuses CRUD', () => {
 
     const responseDelete = await app.inject({
       method: 'POST',
-      url: `/statuses/${status.id}/delete`,
+      url: `/statuses/${status?.id}/delete`,
       cookies: cookie,
     });
 

@@ -12,6 +12,7 @@ export default async (app: FastifyInstance) => {
     .post('/session', fastifyPassport.authenticate('auth', async (req, reply, err, user) => {
       if (err) {
         reply.send('ERROR');
+        return reply;
       }
 
       if (!user) {
@@ -20,6 +21,7 @@ export default async (app: FastifyInstance) => {
 
         const errors = [{ property: 'email', constraints: ['Неправильный email или пароль'] }];
 
+        reply.status(401);
         reply.render('session/new', { signInForm, errors });
         return reply;
       }

@@ -17,6 +17,12 @@
       "lastName": "Baytrop",
       "email": "elbert_abshire52@gmail.com",
       "password": "GloriBaytrop"
+    },
+    "invalid": {
+      "firstName": "",
+      "lastName": "",
+      "email": "empty",
+      "password": ""
     }
   },
   "statuses": {
@@ -28,6 +34,9 @@
     },
     "existing2": {
       "name": "no relations"
+    },
+    "invalid": {
+      "name": ""
     }
   }
 }

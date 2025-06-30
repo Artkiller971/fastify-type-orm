@@ -13,6 +13,8 @@ import { Users } from '../src/entities/User';
 describe('Test users CRUD', () => {
   let app: FastifyInstance;
   const testData = getTestData();
+  let cookie;
+  let fixtureUser;
 
   beforeAll(async () => {
     app = fastify({
@@ -26,6 +28,21 @@ describe('Test users CRUD', () => {
 
   beforeEach(async () => {
     await prepareData(app);
+
+    const params = testData.users.existing;
+    const responseSignIn = await app.inject({
+    method: 'POST',
+    url: '/session',
+    payload: {
+      data: params,
+    },
+  });
+
+    fixtureUser = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+
+    const [sessionCookie] = responseSignIn.cookies;
+    const { name, value } = sessionCookie;
+    cookie = { [name]: value };
   })
 
   it('index', async () => {
@@ -44,6 +61,24 @@ describe('Test users CRUD', () => {
     });
 
     expect(response.statusCode).toBe(200);
+  })
+
+  it('edit get', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: `/users/${fixtureUser.id}/edit`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    const responseNonExistent = await app.inject({
+      method: 'GET',
+      url: `/users/nonExistent/edit`,
+      cookies: cookie,
+    });
+
+    expect(responseNonExistent.statusCode).toBe(302);
   })
 
   it('create', async () => {
@@ -66,21 +101,23 @@ describe('Test users CRUD', () => {
     expect(user).toMatchObject(expected);
   })
 
-  it('edit', async () => {
-    const params = testData.users.existing;
-    const responseSignIn = await app.inject({
+  it('create invalid', async () => {
+    const params = testData.users.invalid;
+    const response = await app.inject({
       method: 'POST',
-      url: '/session',
+      url: '/users',
       payload: {
         data: params,
       },
     });
 
-    expect(responseSignIn.statusCode).toBe(302);
+    expect(response.statusCode).toBe(400);
 
-    const [sessionCookie] = responseSignIn.cookies;
-    const { name, value } = sessionCookie;
-    const cookie = { [name]: value };
+  })
+
+  it('edit', async () => {
+    const params = testData.users.existing;
+
     const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
 
     const newParams = { ...params, firstName: 'Changed' };
@@ -103,21 +140,31 @@ describe('Test users CRUD', () => {
     expect(updatedUser?.firstName).toBe('Changed');
   })
 
-  it('delete', async () => {
+  it('edit invalid', async () => {
     const params = testData.users.existing;
-    const responseSignIn = await app.inject({
+
+    const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+
+    const newParams = { ...params, firstName: '' };
+
+    expect(user).not.toBe(null);
+
+    const responseEdit = await app.inject({
       method: 'POST',
-      url: '/session',
+      url: `/users/${user?.id}/edit`,
       payload: {
-        data: params,
+        data: newParams,
       },
+      cookies: cookie,
     });
 
-    expect(responseSignIn.statusCode).toBe(302);
+    expect(responseEdit.statusCode).toBe(400);
 
-    const [sessionCookie] = responseSignIn.cookies;
-    const { name, value } = sessionCookie;
-    const cookie = { [name]: value };
+  })
+
+  it('delete', async () => {
+    const params = testData.users.existing;
+
     const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
 
     expect(user).not.toBe(null);

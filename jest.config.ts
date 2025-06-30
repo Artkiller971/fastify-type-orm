@@ -7,8 +7,12 @@ const presetConfig = createJsWithTsEsmPreset({
 const jestConfig: JestConfigWithTsJest = {
   ...presetConfig,
   modulePathIgnorePatterns: [
-      "<rootDir>/__tests__/helpers/"
+      "<rootDir>/__tests__/helpers/",
     ],
+  collectCoverageFrom: [
+    "src/{entities,routes}/*.ts",
+    "src/plugin.ts"
+  ],
 }
 
 export default jestConfig

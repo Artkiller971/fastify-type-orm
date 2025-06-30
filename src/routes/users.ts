@@ -8,14 +8,9 @@ import _ from "lodash";
 
 export default async (app: FastifyInstance) => {
   app
-    .get('/users', async (req, reply) => {
+    .get('/users', async (_req, reply) => {
       const users = await app.orm.getRepository(Users).find();
-      try {
-        reply.render('users/index', { users });
-      } catch (e) {
-          reply.send('error');
-          req.log.error(e);
-        }
+      reply.render('users/index', { users });
 
       return reply;
     })
@@ -33,6 +28,7 @@ export default async (app: FastifyInstance) => {
         const user = _.omit(data, 'password')
 
         if (!user) {
+          reply.status(404);
           reply.send('User does not exist');
           return reply;
         }
@@ -64,6 +60,7 @@ export default async (app: FastifyInstance) => {
         }
         
         req.flash('error', i18next.t('flash.users.create.error'));
+        reply.status(400);
         reply.render('users/new', { user: req.body.data , errors });
         return reply;
       }
@@ -95,6 +92,7 @@ export default async (app: FastifyInstance) => {
         }
         
         req.flash('error', i18next.t('flash.users.update.error'));
+        reply.status(400);
         reply.render('users/edit', { user: req.body.data , errors });
         return reply;
       }
