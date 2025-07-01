@@ -7,7 +7,7 @@ const development = new DataSource({
     database: "database.sql",
     namingStrategy: new SnakeNamingStrategy(),
     logger: "debug",
-    entities: ["./dist/entities/*{.js,.ts}"],
+    entities,
     migrations: ["./dist/migrations/*{.js,.ts}"],
 });
 

@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, BeforeInsert} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, BeforeInsert, OneToMany} from "typeorm";
 import { MinLength, IsEmail } from "class-validator";
 import encrypt from '../helpers/hash';
 import { Exclude } from "class-transformer";
+import { Tasks } from "./Task";
 
 @Entity()
 export class Users extends BaseEntity {
@@ -24,6 +25,12 @@ export class Users extends BaseEntity {
   @Column()
   @MinLength(3, { message: 'Minimal length is $constraint1'})
   password: string;
+
+  @OneToMany(() => Tasks, (task) => task.creator)
+  createdTasks: Tasks[]
+
+  @OneToMany(() => Tasks, (task) => task.executor)
+  assignedTasks: Tasks[]
 
   @CreateDateColumn()
   createdAt: Date;
