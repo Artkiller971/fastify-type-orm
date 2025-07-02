@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, ManyToOne} from "typeorm";
-import { MinLength } from "class-validator";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, ManyToOne, JoinColumn} from "typeorm";
+import { IsNotEmpty, MinLength } from "class-validator";
 import { Exclude } from "class-transformer";
 import { Users } from "./User";
 import { Statuses } from "./Status";
@@ -18,18 +18,23 @@ export class Tasks extends BaseEntity {
   description: string
 
   @ManyToOne(() => Statuses, (status) => status.tasks)
+  @IsNotEmpty({ message: 'Must be selected!'})
+  @JoinColumn({name: "status_id"})
   status: Statuses
 
   @ManyToOne(() => Users, (user) => user.createdTasks)
+  @JoinColumn({name: "creator_id"})
   creator: Users
 
   @ManyToOne(() => Users, (user) => user.assignedTasks, { nullable: true })
-  executor: Users | null
+  @JoinColumn({name: "executor_id"})
+  executor: Users | ''
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
 
 }
