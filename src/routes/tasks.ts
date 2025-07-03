@@ -38,19 +38,64 @@ export default async (app: FastifyInstance) => {
       reply.render('tasks/new', { task, users, statuses })
       return reply;
     })
+    .get<{Params: IParams}>('/tasks/:id', { preValidation: app.authenticate }, async (req, reply) => {
+      const id = parseInt(req.params.id);
+      const task = await app.orm.getRepository(Tasks).findOne({
+        where: {
+          id
+        },
+        relations: {
+          creator: true,
+          executor: true,
+          status: true,
+        }
+      })
+
+      console.log(task);
+
+      if (!task) {
+        reply.status(404);
+        reply.send('Status does not exist')
+      }
+
+      reply.render('tasks/show', { task });
+      return reply;
+    })
     .get<{Params: IParams}>
       ('/tasks/:id/edit',
       { preValidation: app.authenticate },
       async (req, reply) => {
         const id = parseInt(req.params.id);
         try {
-          const task = await app.orm.getRepository(Tasks).findOneBy({ id });
+          const task = await app.orm.getRepository(Tasks).findOne({
+            where: {
+              id,
+            },
+            relations: {
+              executor: true,
+              status: true,
+            }
+          })
           if (!task) {
           reply.status(404);
           reply.send('Task does not exist');
           return reply;
-        }
-          reply.render('tasks/edit', { task });
+          }
+          console.log(task);
+          const users = await app.orm.getRepository(Users).find({
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            }
+          })
+          const statuses = await app.orm.getRepository(Statuses).find({
+            select: {
+              id: true,
+              name: true,
+            }
+          })
+          reply.render('tasks/edit', { task, users, statuses });
           return reply;
         } catch {
           reply.status(404);
@@ -76,8 +121,6 @@ export default async (app: FastifyInstance) => {
         reply.redirect('/tasks');
         return reply;
       } catch (e) {
-        console.log(task);
-        console.error(e);
         const validationErrors = e as ValidationError[];
         const errors = validationErrors.map((error) => {
           const constraints = Object.values(error.constraints as object)
@@ -96,8 +139,8 @@ export default async (app: FastifyInstance) => {
             id: true,
             firstName: true,
             lastName: true,
-            }
-          })
+          }
+        })
         const statuses = await app.orm.getRepository(Statuses).find({
           select: {
             id: true,
@@ -116,15 +159,20 @@ export default async (app: FastifyInstance) => {
       { preValidation: app.authenticate },
       async (req, reply) => {
         const id = parseInt(req.params.id);
-        const task = plainToInstance(Tasks, { ...req.body.data });
+        const taskToEdit = await app.orm.getRepository(Tasks).findOneBy({id});
+        const rawTask = {
+          name: req.body.data.name,
+          description: req.body.data.description,
+          executor: parseInt(req.body.data.executorId, 10) || null,
+          status: parseInt(req.body.data.statusId, 10) || '',
+      }
+        const task = plainToInstance(Tasks, { ...taskToEdit, ...rawTask });
         try {
           await validateOrReject(task, { validationError: { target: false }});
           await app.orm.getRepository(Tasks).update(id, task);
           req.flash('info', i18next.t('flash.tasks.update.success'));
           reply.redirect('/tasks');
         } catch (e) {
-          console.log('asdf');
-          console.log(e);
           const validationErrors = e as ValidationError[];
           const errors = validationErrors.map((error) => {
           const constraints = Object.values(error.constraints as object)
@@ -146,6 +194,7 @@ export default async (app: FastifyInstance) => {
               name: true,
             }
           })
+          console.log(task);
           req.flash('error', i18next.t('flash.tasks.update.error'));
           reply.status(400);
           reply.render('tasks/edit', { task: req.body.data , errors, users, statuses });
