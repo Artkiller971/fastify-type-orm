@@ -73,6 +73,7 @@ export default async (app: FastifyInstance) => {
             },
             relations: {
               executor: true,
+              creator: true,
               status: true,
             }
           })
@@ -194,7 +195,6 @@ export default async (app: FastifyInstance) => {
               name: true,
             }
           })
-          console.log(task);
           req.flash('error', i18next.t('flash.tasks.update.error'));
           reply.status(400);
           reply.render('tasks/edit', { task: req.body.data , errors, users, statuses });

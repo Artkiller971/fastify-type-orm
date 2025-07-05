@@ -28,7 +28,7 @@ export class Tasks extends BaseEntity {
 
   @ManyToOne(() => Users, (user) => user.assignedTasks, { nullable: true })
   @JoinColumn({name: "executor_id"})
-  executor: Users | ''
+  executor: Users
 
   @CreateDateColumn()
   createdAt: Date;

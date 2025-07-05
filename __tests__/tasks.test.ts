@@ -6,9 +6,9 @@ import fastify, { FastifyInstance} from 'fastify';
 
 import init from '../src/plugin';
 import { getTestData, prepareData } from './helpers/index';
-import { Statuses } from '../src/entities/Status';
+import { Tasks } from '../src/entities/Task';
 
-describe('test statuses CRUD', () => {
+describe('test tasks CRUD', () => {
   let app: FastifyInstance;
   let cookie;
   const testData = getTestData();
@@ -43,14 +43,14 @@ describe('test statuses CRUD', () => {
   it('index', async () => {
     const noCookieResponse = await app.inject({
       method: 'GET',
-      url: '/statuses',
+      url: '/tasks',
     });
 
     expect(noCookieResponse.statusCode).toBe(302);
 
     const cookieResponse = await app.inject({
       method: 'GET',
-      url: '/statuses',
+      url: '/tasks',
       cookies: cookie,
     });
 
@@ -60,7 +60,7 @@ describe('test statuses CRUD', () => {
   it('edit get', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: '/statuses/1/edit',
+      url: '/tasks/1/edit',
       cookies: cookie,
     })
 
@@ -68,7 +68,7 @@ describe('test statuses CRUD', () => {
 
     const errorResponse = await app.inject({
       method: 'GET',
-      url: '/statuses/nonexistent/edit',
+      url: '/tasks/nonexistent/edit',
       cookies: cookie,
     })
 
@@ -76,7 +76,7 @@ describe('test statuses CRUD', () => {
 
     const nonexistentResponse = await app.inject({
       method: 'GET',
-      url: '/statuses/-2/edit',
+      url: '/tasks/-2/edit',
       cookies: cookie,
     })
 
@@ -86,7 +86,7 @@ describe('test statuses CRUD', () => {
   it('new', async () => {
     const response = await app.inject({
       method: 'GET',
-      url: '/statuses/new',
+      url: '/tasks/new',
       cookies: cookie,
     });
 
@@ -94,29 +94,52 @@ describe('test statuses CRUD', () => {
   });
 
   it('create', async () => {
-    const params = testData.statuses.new;
+    const params = testData.tasks.new;
     const response = await app.inject({
       method: 'POST',
-      url: '/statuses',
+      url: '/tasks',
       payload: {
         data: params,
       },
       cookies: cookie,
     });
 
+
     expect(response.statusCode).toBe(302);
+    const task = await app.orm.getRepository(Tasks).findOne({
+      where: {
+        name: params.name,
+      },
+      relations: {
+        creator: true,
+        executor: true,
+        status: true,
+      }
+    })
+
     const expected = {
-      name: 'Done',
-    };
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
-    expect(status).toMatchObject(expected);
+      name: params.name,
+      description: params.description,
+      creator: 2,
+      executor: 1,
+      status: 1
+    }
+
+    const actual = {
+      name: task?.name,
+      description: task?.description,
+      creator: task?.creator.id,
+      executor: task?.executor.id,
+      status: task?.status.id,
+    }
+    expect(actual).toMatchObject(expected);
   });
 
   it('create error', async () => {
-    const params = testData.statuses.invalid;
+    const params = testData.tasks.invalid;
     const response = await app.inject({
       method: 'POST',
-      url: '/statuses',
+      url: '/tasks',
       payload: {
         data: params,
       },
@@ -127,14 +150,29 @@ describe('test statuses CRUD', () => {
   });
 
   it('edit', async () => {
-    const params = testData.statuses.existing;
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const params = testData.tasks.existing;
+    const task = await app.orm.getRepository(Tasks).findOne({
+      where: {
+        name: params.name
+      },
+      relations: {
+        creator: true,
+        executor: true,
+        status: true,
+      }
+    })
 
-    const newParams = { name: 'Changed' };
+    const newParams = { 
+      description : task?.description,
+      creatorId: task?.creator.id,
+      statusId: task?.status.id,
+      executorId: task?.executor.id,
+      name: 'Changed',
+    };
 
     const responseEdit = await app.inject({
       method: 'POST',
-      url: `/statuses/${status?.id}/edit`,
+      url: `/tasks/${task?.id}/edit`,
       payload: {
         data: newParams,
       },
@@ -143,20 +181,35 @@ describe('test statuses CRUD', () => {
 
     expect(responseEdit.statusCode).toBe(302);
 
-    const updatedStatus = await app.orm.getRepository(Statuses).findOneBy({ name: newParams.name });
+    const updatedStatus = await app.orm.getRepository(Tasks).findOneBy({ name: newParams.name });
 
     expect(updatedStatus?.name).toBe('Changed');
   });
 
   it('edit error', async () => {
-    const params = testData.statuses.existing;
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const params = testData.tasks.existing;
+    const task = await app.orm.getRepository(Tasks).findOne({
+      where: {
+        name: params.name
+      },
+      relations: {
+        creator: true,
+        executor: true,
+        status: true,
+      }
+    })
 
-    const newParams = { name: '' };
+    const newParams = { 
+      description : task?.description,
+      creatorId: task?.creator.id,
+      statusId: task?.status.id,
+      executorId: task?.executor.id,
+      name: '',
+    };
 
     const responseEdit = await app.inject({
       method: 'POST',
-      url: `/statuses/${status?.id}/edit`,
+      url: `/tasks/${task?.id}/edit`,
       payload: {
         data: newParams,
       },
@@ -166,40 +219,22 @@ describe('test statuses CRUD', () => {
     expect(responseEdit.statusCode).toBe(400);
   });
 
-  it('delete no relations', async () => {
-    const params = testData.statuses.existing2;
+  it('delete', async () => {
+    const params = testData.tasks.existing;
 
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const task = await app.orm.getRepository(Tasks).findOneBy({ name: params.name });
 
     const responseDelete = await app.inject({
       method: 'POST',
-      url: `/statuses/${status?.id}/delete`,
+      url: `/tasks/${task?.id}/delete`,
       cookies: cookie,
     });
 
     expect(responseDelete.statusCode).toBe(302);
 
-    const deletedStatus = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const deletedStatus = await app.orm.getRepository(Tasks).findOneBy({ name: params.name });
 
     expect(deletedStatus).toBe(null);
-  });
-
-  it('delete with relations', async () => {
-    const params = testData.statuses.existing;
-
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
-
-    const responseDelete = await app.inject({
-      method: 'POST',
-      url: `/statuses/${status?.id}/delete`,
-      cookies: cookie,
-    });
-
-    expect(responseDelete.statusCode).toBe(302);
-
-    const deletedStatus = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
-
-    expect(deletedStatus).not.toBe(null);
   });
 
   afterEach(async () => {

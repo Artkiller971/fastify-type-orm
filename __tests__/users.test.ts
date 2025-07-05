@@ -162,8 +162,40 @@ describe('Test users CRUD', () => {
 
   })
 
-  it('delete', async () => {
+  it('delete with relations', async () => {
     const params = testData.users.existing;
+
+    const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    console.log(user);
+
+    expect(user).not.toBe(null);
+
+    const responseDelete = await app.inject({
+      method: 'POST',
+      url: `/users/${user?.id}/delete`,
+      cookies: cookie,
+    });
+
+    expect(responseDelete.statusCode).toBe(302);
+
+    const deletedUser = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+
+    expect(deletedUser).not.toBe(null);
+  })
+
+  it('delete no relations', async () => {
+    const params = testData.users.existing3;
+    const responseSignIn = await app.inject({
+      method: 'POST',
+      url: '/session',
+      payload: {
+        data: params,
+      },
+    });
+
+    const [sessionCookie] = responseSignIn.cookies;
+    const { name, value } = sessionCookie;
+    cookie = { [name]: value };
 
     const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
 

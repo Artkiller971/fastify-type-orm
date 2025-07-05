@@ -18,6 +18,12 @@
       "email": "elbert_abshire52@gmail.com",
       "password": "GloriBaytrop"
     },
+    "existing3": {
+      "firstName": "Ardisj",
+      "lastName": "Jewsbury",
+      "email": "nona_murray@yahoo.com",
+      "password": "ArdisjJewsbury"
+    },
     "invalid": {
       "firstName": "",
       "lastName": "",
@@ -37,6 +43,24 @@
     },
     "invalid": {
       "name": ""
+    }
+  },
+  "tasks": {
+    "new": {
+      "name": "new task",
+      "description": "description for new task",
+      "statusId": "1",
+      "executorId": "1"
+    },
+    "existing": {
+      "name": "Task one",
+      "description": "Description for task one",
+      "creator": 1,
+      "executor": 1,
+      "status": 1
+    },
+    "invalid": {
+      "name": "invalid"
     }
   }
 }
