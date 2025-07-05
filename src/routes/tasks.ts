@@ -212,7 +212,7 @@ export default async (app: FastifyInstance) => {
             reply.redirect('/tasks');
           } catch (e) {
             req.flash('error', i18next.t('flash.tasks.delete.error'));
-            console.error(e);
+            console.log(e);
             reply.redirect('/tasks');
           }
 

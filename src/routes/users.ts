@@ -108,9 +108,8 @@ export default async (app: FastifyInstance) => {
           req.flash('info', i18next.t('flash.users.delete.success'));
           reply.redirect('/users');
         } catch (e) {
-          console.error(e);
           req.flash('error', i18next.t('flash.users.delete.error'));
-          console.error(e);
+          console.log(e);
           reply.redirect('/users');
         }
 
