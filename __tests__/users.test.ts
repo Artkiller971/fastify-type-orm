@@ -166,7 +166,6 @@ describe('Test users CRUD', () => {
     const params = testData.users.existing;
 
     const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
-    console.log(user);
 
     expect(user).not.toBe(null);
 

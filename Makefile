@@ -4,8 +4,8 @@ install:
 start:
 	npm start -- --watch --verbose-watch --ignore-watch='node_modules .git .sqlite .sql'
 
-build-webpack:
-	npm run build-webpack
+build:
+	npx tsc && npm run build-webpack
 
 test:
 	npx jest -i

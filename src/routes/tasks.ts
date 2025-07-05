@@ -51,8 +51,6 @@ export default async (app: FastifyInstance) => {
         }
       })
 
-      console.log(task);
-
       if (!task) {
         reply.status(404);
         reply.send('Status does not exist')
@@ -82,7 +80,6 @@ export default async (app: FastifyInstance) => {
           reply.send('Task does not exist');
           return reply;
           }
-          console.log(task);
           const users = await app.orm.getRepository(Users).find({
             select: {
               id: true,

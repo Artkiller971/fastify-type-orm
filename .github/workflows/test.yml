@@ -17,6 +17,9 @@ jobs:
       # Ставим зависимости
       - name: npm install
         run: make install
+      # Webpack + tsc
+      - name: make build
+        run: make build
       # Запускаем линтер
       - name: run linter
         run: make lint
