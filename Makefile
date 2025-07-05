@@ -7,5 +7,8 @@ build-webpack:
 test:
 	npx jest -i
 
+lint:
+	npx eslint .
+
 migrate-dev:
 	npm run migrate-dev
