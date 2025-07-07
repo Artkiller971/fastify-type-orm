@@ -49,7 +49,7 @@ mixin buttonTo(action, method)
 
 mixin select(entity, propertyName, relation, errors = [], items, multiple = false)
   - propertyError = errors.find((item) => item.property === propertyName)
-  - classLine = 'form-control' + (!propertyError ? '' : ' is-invalid')
+  - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   - name = getInputName(propertyName)
   - selectedOption = entity[relation] ? Number(entity[relation].id) : null
@@ -69,12 +69,12 @@ mixin select(entity, propertyName, relation, errors = [], items, multiple = fals
     if propertyError
       .invalid-feedback= propertyError.constraints.join(' ')
 
-mixin selectMultiple(entity, propertyName, errors = {}, items)
-  - propertyErrors = _.get(errors, propertyName)
+mixin selectMultiple(entity, propertyName, errors = [], items)
+  - propertyErrors = errors.find((item) => item.property === propertyName)
   - classLine = 'form-control' + (_.isEmpty(propertyErrors) ? '' : ' is-invalid')
   - inputId = getInputId(propertyName)
   - name = getInputName(propertyName)
-  - selectedOptions = entity[propertyName] ? [entity[propertyName]].flat().map((item) => item.id ? Number(item.id) : Number(item)) : []
+  - selectedOption = entity[relation] ? Number(entity[relation].id) : null
   .mb-3(class=(errors[propertyName] && 'has-danger'))
     label(
       for= inputId
@@ -86,10 +86,10 @@ mixin selectMultiple(entity, propertyName, errors = {}, items)
       multiple
     )
       each option in items
-        - isSelect = _.includes(selectedOptions, option.id)
+        - isSelect = selectedOption == option.id
         option(value=option.id selected= isSelect) #{option.name}
-    if !_.isEmpty(propertyErrors)
-      .invalid-feedback= propertyErrors.map(({ message }) => message === 'must be integer'? 'must be specified' : message).join('. ')
+    if propertyError
+      .invalid-feedback= propertyError.constraints.join(' ')
 
 mixin filterSelect(entity, propertyName, items)
   - inputId = getInputId(propertyName)

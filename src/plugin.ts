@@ -18,7 +18,7 @@ import dbConfigs from './data-source';
 import getHelpers from "./helpers/helpers";
 import addRoutes from './routes/index';
 import ru from './locales/ru';
-import { Users } from "./entities/User";
+import { User } from "./entities/User";
 import { NextFunction } from "@fastify/middie";
 
 dotenv.config({ path: path.resolve('./.env')});
@@ -71,7 +71,7 @@ const setUpStaticAssets = (app: FastifyInstance) => {
 };
 
 const registerPlugins = async (app: FastifyInstance) => {
-  app.register(dbConn, { connection: dbConfigs[mode] });
+  app.register(dbConn, { connection: dbConfigs[mode]});
   await app.register(fastifyFormbody, { parser: qs.parse });
   await app.register(fastifySecureSession, {
     key: Buffer.from(process.env.SESSION_KEY),
@@ -82,8 +82,8 @@ const registerPlugins = async (app: FastifyInstance) => {
   await app.register(fastifyPassport.initialize());
   await app.register(fastifyPassport.secureSession());
   fastifyPassport.use(new AuthStrategy('auth', app));
-  const userDeserializer = async (user: Users) => {
-    return await app.orm.getRepository(Users).findOneBy({ id: user.id });
+  const userDeserializer = async (user: User) => {
+    return await app.orm.getRepository(User).findOneBy({ id: user.id });
   }
   fastifyPassport.registerUserDeserializer(userDeserializer)
   fastifyPassport.registerUserSerializer((user) => Promise.resolve(user));

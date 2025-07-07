@@ -1,9 +1,11 @@
-import { Users } from './User';
-import { Statuses } from './Status';
-import { Tasks } from './Task';
+import { User } from './User';
+import { Status } from './Status';
+import { Task } from './Task';
+import { Label } from './Label';
 
 export default [
-  Users,
-  Statuses,
-  Tasks,
+  User,
+  Status,
+  Task,
+  Label,
 ]

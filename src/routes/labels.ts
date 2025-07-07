@@ -1,34 +1,34 @@
 import { FastifyInstance, IParams, IBody } from "fastify";
 import { validateOrReject, ValidationError} from "class-validator";
-import { Status } from "../entities/Status";
+import { Label } from "../entities/Label";
 import { plainToInstance } from "class-transformer";
 import i18next from "i18next";
 
 export default async (app: FastifyInstance) => {
   app
-    .get('/statuses', { preValidation: app.authenticate }, async (_req, reply) => {
-      const statuses = await app.orm.getRepository(Status).find();
-      reply.render('statuses/index', { statuses });
+    .get('/labels', { preValidation: app.authenticate }, async (_req, reply) => {
+      const labels = await app.orm.getRepository(Label).find();
+      reply.render('labels/index', { labels });
       return reply;
     })
-    .get('/statuses/new', { preValidation: app.authenticate }, async (_req, reply) => {
-      const status = app.orm.getRepository(Status).create();
-      reply.render('statuses/new', { status });
+    .get('/labels/new', { preValidation: app.authenticate }, async (_req, reply) => {
+      const label = app.orm.getRepository(Label).create();
+      reply.render('labels/new', { label });
       return reply;
     })
     .get<{Params: IParams}>
-      ('/statuses/:id/edit',
+      ('/labels/:id/edit',
       { preValidation: app.authenticate },
       async (req, reply) => {
         const id = parseInt(req.params.id);
         try {
-          const status = await app.orm.getRepository(Status).findOneBy({ id });
-          if (!status) {
+          const label = await app.orm.getRepository(Label).findOneBy({ id });
+          if (!label) {
           reply.status(404);
           reply.send('Status does not exist');
           return reply;
         }
-          reply.render('statuses/edit', { status });
+          reply.render('labels/edit', { label });
           return reply;
         } catch {
           reply.status(404);
@@ -37,13 +37,13 @@ export default async (app: FastifyInstance) => {
         }
         
     })
-    .post<{Body: IBody, Params: IParams}>('/statuses', async (req, reply) => {
-      const status = plainToInstance(Status, { ...req.body.data });
+    .post<{Body: IBody, Params: IParams}>('/labels', async (req, reply) => {
+      const label = plainToInstance(Label, { ...req.body.data });
       try {
-        await validateOrReject(status, { validationError: { target: false }});
-        await app.orm.getRepository(Status).insert(status);
-        req.flash('info', i18next.t('flash.statuses.create.success'));
-        reply.redirect('/statuses');
+        await validateOrReject(label, { validationError: { target: false }});
+        await app.orm.getRepository(Label).insert(label);
+        req.flash('info', i18next.t('flash.labels.create.success'));
+        reply.redirect('/labels');
         return reply;
       } catch (e) {
         const validationErrors = e as ValidationError[];
@@ -55,23 +55,23 @@ export default async (app: FastifyInstance) => {
           }
         })
         
-        req.flash('error', i18next.t('flash.statuses.create.error'));
+        req.flash('error', i18next.t('flash.labels.create.error'));
         reply.status(400);
-        reply.render('statuses/new', { status: req.body.data , errors });
+        reply.render('labels/new', { label: req.body.data , errors });
         return reply;
       }
     })
     .post<{Body: IBody, Params: IParams}>
-      ('/statuses/:id/edit',
+      ('/labels/:id/edit',
       { preValidation: app.authenticate },
       async (req, reply) => {
         const id = parseInt(req.params.id);
-        const status = plainToInstance(Status, { ...req.body.data });
+        const label = plainToInstance(Label, { ...req.body.data });
         try {
-          await validateOrReject(status, { validationError: { target: false }});
-          await app.orm.getRepository(Status).update(id, status);
-          req.flash('info', i18next.t('flash.statuses.update.success'));
-          reply.redirect('/statuses');
+          await validateOrReject(label, { validationError: { target: false }});
+          await app.orm.getRepository(Label).update(id, label);
+          req.flash('info', i18next.t('flash.labels.update.success'));
+          reply.redirect('/labels');
         } catch (e) {
           const validationErrors = e as ValidationError[];
           const errors = validationErrors.map((error) => {
@@ -82,25 +82,25 @@ export default async (app: FastifyInstance) => {
             }
           })
         
-        req.flash('error', i18next.t('flash.statuses.update.error'));
+        req.flash('error', i18next.t('flash.labels.update.error'));
         reply.status(400);
-        reply.render('statuses/edit', { status: req.body.data , errors });
+        reply.render('labels/edit', { label: req.body.data , errors });
         return reply;
       }
       })
       .post<{Params: IParams}>
-        ('/statuses/:id/delete',
+        ('/labels/:id/delete',
         { preValidation: app.authenticate },
         async (req, reply) => {
           const id = parseInt(req.params.id)
           try {
-            await app.orm.getRepository(Status).delete(id);
-            req.flash('info', i18next.t('flash.statuses.delete.success'));
-            reply.redirect('/statuses');
+            await app.orm.getRepository(Label).delete(id);
+            req.flash('info', i18next.t('flash.labels.delete.success'));
+            reply.redirect('/labels');
           } catch (e) {
             console.log(e);
-            req.flash('error', i18next.t('flash.statuses.delete.error'));
-            reply.redirect('/statuses');
+            req.flash('error', i18next.t('flash.labels.delete.error'));
+            reply.redirect('/labels');
           }
 
           return reply;

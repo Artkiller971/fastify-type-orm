@@ -1,6 +1,6 @@
 import { FastifyInstance, IParams, IBody } from "fastify";
 import { validateOrReject, ValidationError} from "class-validator";
-import { Users } from "../entities/User";
+import { User } from "../entities/User";
 import { plainToInstance } from "class-transformer";
 import i18next from "i18next";
 import { QueryFailedError } from "typeorm";
@@ -9,13 +9,13 @@ import _ from "lodash";
 export default async (app: FastifyInstance) => {
   app
     .get('/users', async (_req, reply) => {
-      const users = await app.orm.getRepository(Users).find();
+      const users = await app.orm.getRepository(User).find();
       reply.render('users/index', { users });
 
       return reply;
     })
     .get('/users/new', async (_req, reply) => {
-      const user = app.orm.getRepository(Users).create();
+      const user = app.orm.getRepository(User).create();
       reply.render('users/new', { user });
       return reply;
     })
@@ -24,7 +24,7 @@ export default async (app: FastifyInstance) => {
       { preValidation: [ app.userCanEditProfile, app.authenticate ]},
       async (req, reply) => {
         const id = parseInt(req.params.id);
-        const data = await app.orm.getRepository(Users).findOneBy({ id });
+        const data = await app.orm.getRepository(User).findOneBy({ id });
         const user = _.omit(data, 'password')
 
         if (!user) {
@@ -37,10 +37,10 @@ export default async (app: FastifyInstance) => {
         return reply;
     })
     .post<{Body: IBody, Params: IParams}>('/users', async (req, reply) => {
-      const user = plainToInstance(Users, { ...req.body.data });
+      const user = plainToInstance(User, { ...req.body.data });
       try {
         await validateOrReject(user, { validationError: { target: false }});
-        await app.orm.getRepository(Users).insert(user);
+        await app.orm.getRepository(User).insert(user);
         req.flash('info', i18next.t('flash.users.create.success'));
         reply.redirect('/users');
         return reply;
@@ -70,10 +70,10 @@ export default async (app: FastifyInstance) => {
       { preValidation: [ app.userCanEditProfile, app.authenticate ]},
       async (req, reply) => {
         const id = parseInt(req.params.id);
-        const user = plainToInstance(Users, { ...req.body.data });
+        const user = plainToInstance(User, { ...req.body.data });
         try {
           await validateOrReject(user, { validationError: { target: false }});
-          await app.orm.getRepository(Users).update(id, user);
+          await app.orm.getRepository(User).update(id, user);
           req.flash('info', i18next.t('flash.users.update.success'));
           reply.redirect('/users');
         } catch (e) {
@@ -103,7 +103,7 @@ export default async (app: FastifyInstance) => {
       async (req, reply) => {
         const id = parseInt(req.params.id)
         try {
-          await app.orm.getRepository(Users).delete(id);
+          await app.orm.getRepository(User).delete(id);
           req.logOut();
           req.flash('info', i18next.t('flash.users.delete.success'));
           reply.redirect('/users');

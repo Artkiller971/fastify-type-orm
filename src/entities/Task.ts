@@ -1,40 +1,47 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, ManyToOne, JoinColumn} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, ManyToOne, JoinColumn, ManyToMany, JoinTable} from "typeorm";
 import { IsNotEmpty, MinLength } from "class-validator";
-import { Exclude } from "class-transformer";
-import { Users } from "./User";
-import { Statuses } from "./Status";
+import { User } from "./User";
+import { Status } from "./Status";
+import { Label } from "./Label";
 
-@Entity()
-export class Tasks extends BaseEntity {
+@Entity({
+  name: 'tasks'
+})
+export class Task extends BaseEntity {
   @PrimaryGeneratedColumn()
-  @Exclude()
-  id: number;
+  id: number
 
   @Column()
   @MinLength(1, { message: 'Minimal length is $constraint1'})
-  name: string;
+  name: string
 
   @Column({ nullable: true })
   description: string
 
-  @ManyToOne(() => Statuses, (status) => status.tasks)
+  @ManyToOne(() => Status, (status) => status.tasks)
   @IsNotEmpty({ message: 'Must be selected!'})
   @JoinColumn({name: "status_id"})
-  status: Statuses
+  status: Status
 
-  @ManyToOne(() => Users, (user) => user.createdTasks)
+  @ManyToOne(() => User, (user) => user.createdTasks)
   @JoinColumn({name: "creator_id"})
-  creator: Users
-
-  @ManyToOne(() => Users, (user) => user.assignedTasks, { nullable: true })
+  creator: User
+ 
+  @ManyToOne(() => User, (user) => user.assignedTasks, { nullable: true })
   @JoinColumn({name: "executor_id"})
-  executor: Users
+  executor: User
+
+  @ManyToMany(() => Label, (label) => label.tasks, {
+    cascade: ['remove', 'update'],
+  })
+  @JoinTable({
+    name: 'tasks_labels',
+  })
+  labels: Label[]
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt: Date
 
   @UpdateDateColumn()
-  updatedAt: Date;
-
-
+  updatedAt: Date
 }

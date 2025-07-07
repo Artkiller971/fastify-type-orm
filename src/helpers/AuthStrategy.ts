@@ -1,6 +1,6 @@
 import { Strategy } from "@fastify/passport";
 import { FastifyRequest, FastifyInstance, IBody } from "fastify";
-import { Users } from "../entities/User";
+import { User } from "../entities/User";
 
 export default class AuthStrategy extends Strategy {
   constructor(name: string, public app: FastifyInstance) {
@@ -18,7 +18,7 @@ export default class AuthStrategy extends Strategy {
       const email = body.data.email
       const password = body.data.password
 
-      const user = await this.app.orm.getRepository(Users).findOneBy({ email })
+      const user = await this.app.orm.getRepository(User).findOneBy({ email })
       if (user && user.verifyPassword(password)) {
         return this.success(user);
       }

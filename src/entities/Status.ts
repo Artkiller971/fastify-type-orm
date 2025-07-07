@@ -1,10 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, OneToMany} from "typeorm";
 import { MinLength } from "class-validator";
 import { Exclude } from "class-transformer";
-import { Tasks } from "./Task";
+import { Task } from "./Task";
 
-@Entity()
-export class Statuses extends BaseEntity {
+@Entity({
+  name: 'statuses'
+})
+export class Status extends BaseEntity {
   @PrimaryGeneratedColumn()
   @Exclude()
   id: number;
@@ -13,8 +15,8 @@ export class Statuses extends BaseEntity {
   @MinLength(1,{ message: 'Minimal length is $constraint1'})
   name: string;
 
-  @OneToMany(() => Tasks, (task) => task.status)
-  tasks: Tasks[]
+  @OneToMany(() => Task, (task) => task.status)
+  tasks: Task[]
 
 
   @CreateDateColumn()

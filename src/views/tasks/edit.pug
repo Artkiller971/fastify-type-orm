@@ -9,4 +9,5 @@ block content
     +textarea(task, 'description', errors)(type="text", rows=3)
     +select(task, 'statusId', 'status', errors, statuses)(type="text")
     +select(task, 'executorId', 'executor', errors, users)(type="text")
+    +selectMultiple(task, 'labels', errors, labels)
     +submit(task)(value=t('views.tasks.edit'))

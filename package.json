@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc -w -p tsconfig.json",
-    "start": "fastify start dist/plugin.js -l info -P -o",
+    "start": "fastify start dist/plugin.js -l debug -P -o",
     "migrate-dev": "typeorm migration:run -d ./src/dataSourcesForMigrations/dev.ts",
     "build-webpack": "webpack"
   },

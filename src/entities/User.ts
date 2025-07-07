@@ -2,10 +2,12 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { MinLength, IsEmail } from "class-validator";
 import encrypt from '../helpers/hash';
 import { Exclude } from "class-transformer";
-import { Tasks } from "./Task";
+import { Task } from "./Task";
 
-@Entity()
-export class Users extends BaseEntity {
+@Entity({
+  name: 'users'
+})
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   @Exclude()
   id: number;
@@ -26,11 +28,11 @@ export class Users extends BaseEntity {
   @MinLength(3, { message: 'Minimal length is $constraint1'})
   password: string;
 
-  @OneToMany(() => Tasks, (task) => task.creator)
-  createdTasks: Tasks[]
+  @OneToMany(() => Task, (task) => task.creator)
+  createdTasks: Task[]
 
-  @OneToMany(() => Tasks, (task) => task.executor)
-  assignedTasks: Tasks[]
+  @OneToMany(() => Task, (task) => task.executor)
+  assignedTasks: Task[]
 
   @CreateDateColumn()
   createdAt: Date;

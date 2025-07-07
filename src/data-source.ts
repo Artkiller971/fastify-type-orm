@@ -6,7 +6,8 @@ const development = new DataSource({
     type: "sqlite",
     database: "database.sql",
     namingStrategy: new SnakeNamingStrategy(),
-    logger: "debug",
+    logger: "formatted-console",
+    logging: true,
     entities,
     migrations: ["./dist/migrations/*{.js,.ts}"],
 });
