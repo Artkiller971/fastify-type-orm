@@ -7,7 +7,7 @@ import fastify, { FastifyInstance } from 'fastify';
 
 import init from '../src/plugin';
 import { getTestData, prepareData } from './helpers/index';
-import { Users } from '../src/entities/User';
+import { User } from '../src/entities/User';
 
 describe('Test sessions', () => {
   let app: FastifyInstance;
@@ -91,7 +91,7 @@ describe('Test sessions', () => {
     const [sessionCookie] = responseSignIn.cookies;
     const { name, value } = sessionCookie;
     const cookie = { [name]: value };
-    const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    const user = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     expect(user).not.toBe(null);
 

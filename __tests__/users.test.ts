@@ -8,7 +8,7 @@ import fastify, { FastifyInstance } from 'fastify';
 import init from '../src/plugin';
 import encrypt from '../src/helpers/hash';
 import { getTestData, prepareData } from './helpers/index';
-import { Users } from '../src/entities/User';
+import { User } from '../src/entities/User';
 
 describe('Test users CRUD', () => {
   let app: FastifyInstance;
@@ -38,7 +38,7 @@ describe('Test users CRUD', () => {
     },
   });
 
-    fixtureUser = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    fixtureUser = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     const [sessionCookie] = responseSignIn.cookies;
     const { name, value } = sessionCookie;
@@ -97,7 +97,7 @@ describe('Test users CRUD', () => {
       password: encrypt(params.password),
     };
 
-    const user = await app.orm.getRepository(Users).findOneBy({ email: params.email});
+    const user = await app.orm.getRepository(User).findOneBy({ email: params.email});
     expect(user).toMatchObject(expected);
   })
 
@@ -118,7 +118,7 @@ describe('Test users CRUD', () => {
   it('edit', async () => {
     const params = testData.users.existing;
 
-    const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    const user = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     const newParams = { ...params, firstName: 'Changed' };
 
@@ -135,7 +135,7 @@ describe('Test users CRUD', () => {
 
     expect(responseEdit.statusCode).toBe(302);
 
-    const updatedUser = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    const updatedUser = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     expect(updatedUser?.firstName).toBe('Changed');
   })
@@ -143,7 +143,7 @@ describe('Test users CRUD', () => {
   it('edit invalid', async () => {
     const params = testData.users.existing;
 
-    const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    const user = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     const newParams = { ...params, firstName: '' };
 
@@ -165,7 +165,7 @@ describe('Test users CRUD', () => {
   it('delete with relations', async () => {
     const params = testData.users.existing;
 
-    const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    const user = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     expect(user).not.toBe(null);
 
@@ -177,7 +177,7 @@ describe('Test users CRUD', () => {
 
     expect(responseDelete.statusCode).toBe(302);
 
-    const deletedUser = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    const deletedUser = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     expect(deletedUser).not.toBe(null);
   })
@@ -196,7 +196,7 @@ describe('Test users CRUD', () => {
     const { name, value } = sessionCookie;
     cookie = { [name]: value };
 
-    const user = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    const user = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     expect(user).not.toBe(null);
 
@@ -208,7 +208,7 @@ describe('Test users CRUD', () => {
 
     expect(responseDelete.statusCode).toBe(302);
 
-    const deletedUser = await app.orm.getRepository(Users).findOneBy({ email: params.email });
+    const deletedUser = await app.orm.getRepository(User).findOneBy({ email: params.email });
 
     expect(deletedUser).toBe(null);
   })

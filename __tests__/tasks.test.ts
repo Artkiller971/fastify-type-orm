@@ -6,7 +6,7 @@ import fastify, { FastifyInstance} from 'fastify';
 
 import init from '../src/plugin';
 import { getTestData, prepareData } from './helpers/index';
-import { Tasks } from '../src/entities/Task';
+import { Task } from '../src/entities/Task';
 
 describe('test tasks CRUD', () => {
   let app: FastifyInstance;
@@ -106,7 +106,7 @@ describe('test tasks CRUD', () => {
 
 
     expect(response.statusCode).toBe(302);
-    const task = await app.orm.getRepository(Tasks).findOne({
+    const task = await app.orm.getRepository(Task).findOne({
       where: {
         name: params.name,
       },
@@ -151,7 +151,7 @@ describe('test tasks CRUD', () => {
 
   it('edit', async () => {
     const params = testData.tasks.existing;
-    const task = await app.orm.getRepository(Tasks).findOne({
+    const task = await app.orm.getRepository(Task).findOne({
       where: {
         name: params.name
       },
@@ -181,14 +181,14 @@ describe('test tasks CRUD', () => {
 
     expect(responseEdit.statusCode).toBe(302);
 
-    const updatedStatus = await app.orm.getRepository(Tasks).findOneBy({ name: newParams.name });
+    const updatedStatus = await app.orm.getRepository(Task).findOneBy({ name: newParams.name });
 
     expect(updatedStatus?.name).toBe('Changed');
   });
 
   it('edit error', async () => {
     const params = testData.tasks.existing;
-    const task = await app.orm.getRepository(Tasks).findOne({
+    const task = await app.orm.getRepository(Task).findOne({
       where: {
         name: params.name
       },
@@ -222,7 +222,7 @@ describe('test tasks CRUD', () => {
   it('delete', async () => {
     const params = testData.tasks.existing;
 
-    const task = await app.orm.getRepository(Tasks).findOneBy({ name: params.name });
+    const task = await app.orm.getRepository(Task).findOneBy({ name: params.name });
 
     const responseDelete = await app.inject({
       method: 'POST',
@@ -232,7 +232,7 @@ describe('test tasks CRUD', () => {
 
     expect(responseDelete.statusCode).toBe(302);
 
-    const deletedStatus = await app.orm.getRepository(Tasks).findOneBy({ name: params.name });
+    const deletedStatus = await app.orm.getRepository(Task).findOneBy({ name: params.name });
 
     expect(deletedStatus).toBe(null);
   });

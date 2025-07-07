@@ -6,7 +6,7 @@ import fastify, { FastifyInstance} from 'fastify';
 
 import init from '../src/plugin';
 import { getTestData, prepareData } from './helpers/index';
-import { Statuses } from '../src/entities/Status';
+import { Status } from '../src/entities/Status';
 
 describe('test statuses CRUD', () => {
   let app: FastifyInstance;
@@ -108,7 +108,7 @@ describe('test statuses CRUD', () => {
     const expected = {
       name: 'Done',
     };
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const status = await app.orm.getRepository(Status).findOneBy({ name: params.name });
     expect(status).toMatchObject(expected);
   });
 
@@ -128,7 +128,7 @@ describe('test statuses CRUD', () => {
 
   it('edit', async () => {
     const params = testData.statuses.existing;
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const status = await app.orm.getRepository(Status).findOneBy({ name: params.name });
 
     const newParams = { name: 'Changed' };
 
@@ -143,14 +143,14 @@ describe('test statuses CRUD', () => {
 
     expect(responseEdit.statusCode).toBe(302);
 
-    const updatedStatus = await app.orm.getRepository(Statuses).findOneBy({ name: newParams.name });
+    const updatedStatus = await app.orm.getRepository(Status).findOneBy({ name: newParams.name });
 
     expect(updatedStatus?.name).toBe('Changed');
   });
 
   it('edit error', async () => {
     const params = testData.statuses.existing;
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const status = await app.orm.getRepository(Status).findOneBy({ name: params.name });
 
     const newParams = { name: '' };
 
@@ -169,7 +169,7 @@ describe('test statuses CRUD', () => {
   it('delete no relations', async () => {
     const params = testData.statuses.existing2;
 
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const status = await app.orm.getRepository(Status).findOneBy({ name: params.name });
 
     const responseDelete = await app.inject({
       method: 'POST',
@@ -179,7 +179,7 @@ describe('test statuses CRUD', () => {
 
     expect(responseDelete.statusCode).toBe(302);
 
-    const deletedStatus = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const deletedStatus = await app.orm.getRepository(Status).findOneBy({ name: params.name });
 
     expect(deletedStatus).toBe(null);
   });
@@ -187,7 +187,7 @@ describe('test statuses CRUD', () => {
   it('delete with relations', async () => {
     const params = testData.statuses.existing;
 
-    const status = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const status = await app.orm.getRepository(Status).findOneBy({ name: params.name });
 
     const responseDelete = await app.inject({
       method: 'POST',
@@ -197,7 +197,7 @@ describe('test statuses CRUD', () => {
 
     expect(responseDelete.statusCode).toBe(302);
 
-    const deletedStatus = await app.orm.getRepository(Statuses).findOneBy({ name: params.name });
+    const deletedStatus = await app.orm.getRepository(Status).findOneBy({ name: params.name });
 
     expect(deletedStatus).not.toBe(null);
   });
