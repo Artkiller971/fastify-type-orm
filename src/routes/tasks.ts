@@ -60,7 +60,6 @@ export default async (app: FastifyInstance) => {
           labels: true,
         }
       })
-      console.log(task);
 
       if (!task) {
         reply.status(404);
@@ -135,11 +134,9 @@ export default async (app: FastifyInstance) => {
         status: parseInt(req.body.data.statusId, 10) || '',
         labels: labels || [],
       }
-      console.log(rawTask);
       const task = plainToInstance(Task, rawTask);
       try {
         await validateOrReject(task, { validationError: { target: false }});
-        console.log(task);
         await app.orm.getRepository(Task).save(task);
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect('/tasks');
@@ -210,8 +207,6 @@ export default async (app: FastifyInstance) => {
           labels: labels || [],
       }
         const task = plainToInstance(Task, { ...taskToEdit, ...rawTask });
-        console.log(taskToEdit);
-        console.log(task);
         try {
           await validateOrReject(task, { validationError: { target: false }});
           await app.orm.getRepository(Task).save(task);

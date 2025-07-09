@@ -4,7 +4,8 @@
     "description": "Description for task one",
     "creator": 1,
     "executor": 1,
-    "status": 1
+    "status": 1,
+    "labels": [1, 2]
   },
   {
     "name": "Task two",

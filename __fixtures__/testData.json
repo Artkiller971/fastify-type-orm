@@ -50,7 +50,8 @@
       "name": "new task",
       "description": "description for new task",
       "statusId": "1",
-      "executorId": "1"
+      "executorId": "1",
+      "labels": [1, 2]
     },
     "existing": {
       "name": "Task one",
@@ -61,6 +62,23 @@
     },
     "invalid": {
       "name": "invalid"
+    }
+  },
+  "labels": {
+    "new": {
+      "name": "New label 1"
+    },
+    "new2": {
+      "name": "New label 2"
+    },
+    "existing": {
+      "name": "Label one"
+    },
+    "existing2": {
+      "name": "no relations"
+    },
+    "invalid": {
+      "name": ""
     }
   }
 }
