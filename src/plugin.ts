@@ -20,6 +20,7 @@ import addRoutes from './routes/index';
 import ru from './locales/ru';
 import { User } from "./entities/User";
 import { NextFunction } from "@fastify/middie";
+import './helpers/query';
 
 dotenv.config({ path: path.resolve('./.env')});
 

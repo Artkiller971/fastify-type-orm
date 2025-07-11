@@ -20,7 +20,7 @@ declare module 'fastify' {
     [key: string]: string;
   }
 
-  interface IQueryString {
+  interface IQuerystring {
     [key: string]: string;
   }
 

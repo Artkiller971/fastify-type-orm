@@ -1,4 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, ManyToOne, JoinColumn, ManyToMany, JoinTable} from "typeorm";
+import {
+  Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn,
+  BaseEntity, ManyToOne, JoinColumn, ManyToMany, JoinTable 
+} from "typeorm";
 import { IsNotEmpty, MinLength } from "class-validator";
 import { User } from "./User";
 import { Status } from "./Status";

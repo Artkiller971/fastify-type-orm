@@ -5,15 +5,15 @@ block header
 block content
   a.btn.btn-primary.mb-5(href='/tasks/new')= t('views.tasks.createTask')
 
-  //- .card.shadow-sm
-  //-   .card-body.p-4
-  //-     +formFor()(action='/tasks' method='get')
-  //-       .row
-  //-         +filterSelect('tasks', 'status', statuses)
-  //-         +filterSelect('tasks', 'executor', users)
-  //-         +filterSelect('tasks', 'label', labels)
-  //-       +checkbox('tasks', 'isCreatorUser')
-  //-       +submit(task)(value=t('views.tasks.filter.submit'))
+  .card.shadow-sm
+    .card-body.p-4
+      +formFor()(action='/tasks' method='get')
+        .row
+          +filterSelect('tasks', 'status', statuses)
+          +filterSelect('tasks', 'executor', users)
+          +filterSelect('tasks', 'label', labels)
+        +checkbox('tasks', 'isCreatorUser')
+        +submit(task)(value=t('views.tasks.filter.submit'))
   
   .table-responsive
     table.table.table-borderless.table-striped.mt-5

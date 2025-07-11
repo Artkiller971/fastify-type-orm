@@ -1,4 +1,4 @@
-import { FastifyInstance, IParams, IBody } from "fastify";
+import { FastifyInstance, IParams, IBody, IQuerystring } from "fastify";
 import { validateOrReject, ValidationError} from "class-validator";
 import { In } from "typeorm";
 import { Task } from "../entities/Task";
@@ -10,17 +10,54 @@ import { Label } from "../entities/Label";
 
 export default async (app: FastifyInstance) => {
   app
-    .get('/tasks', { preValidation: app.authenticate }, async (_req, reply) => {
+    .get<{Querystring: IQuerystring}>('/tasks', { preValidation: app.authenticate }, async (req, reply) => {
+
+      const { query } = req;
+      const statusId = parseInt(query.status) || '';
+      const exectuorId = parseInt(query.exectuor) || '';
+      const labelId = parseInt(query.label) || '';
+      const currentUserId = query.isCreatorUser ? req.user?.id : '';
+
       const tasks = await app.orm.getRepository(Task)
-      .find({
-        relations: {
-          creator: true,
-          executor: true,
-          status: true,
-          labels: true,
+        .createQueryBuilder('task')
+        .leftJoinAndSelect('task.status', 'status')
+        .leftJoinAndSelect('task.executor', 'executor')
+        .leftJoinAndSelect('task.creator', 'creator')
+        .leftJoinAndSelect('task.labels', 'labels')
+        .filterByLabel(labelId)
+        .filterByStatus(statusId)
+        .filterByExecutor(exectuorId)
+        .filterOwn(currentUserId)
+        .getMany()
+
+
+      const task = app.orm.getRepository(Task).create()
+
+      const users = await app.orm.getRepository(User).find({
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
         }
       })
-      reply.render('tasks/index', { tasks });
+
+      const statuses = await app.orm.getRepository(Status).find({
+        select: {
+          id: true,
+          name: true,
+        }
+      })
+
+      const labels = await app.orm.getRepository(Label).find({
+        select: {
+          id: true,
+          name: true,
+        }
+      })
+
+      console.log(tasks);
+
+      reply.render('tasks/index', { tasks, users, labels, statuses, task, query });
       return reply;
     })
     .get('/tasks/new', { preValidation: app.authenticate }, async (_req, reply) => {
